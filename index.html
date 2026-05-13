@@ -1,0 +1,872 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Moon Casino - Fake Money Games</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <canvas id="ambientCanvas" aria-hidden="true"></canvas>
+
+    <section id="welcomeScreen" class="welcome-screen">
+      <div class="welcome-inner">
+        <div class="brand-mark welcome-moon" aria-hidden="true"><span class="moon-logo"></span></div>
+        <span class="eyebrow">Fake Money Arcade</span>
+        <h1>Welcome to Moon Casino</h1>
+        <p>Waehle zwischen Casino-Games und einem Demo-Crypto-Trading-Bereich.</p>
+        <div class="welcome-actions">
+          <button id="enterCasino" class="primary-btn" type="button">Casino</button>
+          <button id="enterTrading" class="secondary-btn" type="button">Traden</button>
+        </div>
+      </div>
+    </section>
+
+    <div id="casinoApp" class="app-shell app-mode" hidden>
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true"><span class="moon-logo"></span></div>
+          <div>
+            <h1>Moon Casino</h1>
+            <p>Fake Coins only</p>
+          </div>
+        </div>
+
+        <section class="balance-panel" aria-label="Kontostand">
+          <span class="eyebrow">Guthaben</span>
+          <strong id="balance">1,000</strong>
+          <span class="coin-label">Demo-Coins</span>
+        </section>
+
+        <div class="sidebar-actions">
+          <button id="openLobbyFromCasino" class="ghost-btn" type="button">Lobby</button>
+          <button id="openTradingFromCasino" class="ghost-btn" type="button">Traden</button>
+        </div>
+
+        <nav class="game-nav" aria-label="Spielauswahl">
+          <button class="nav-btn" type="button" data-view="cases" title="Case Opening">
+            <span class="nav-icon case-icon" aria-hidden="true"></span>
+            <span>Cases</span>
+          </button>
+          <button class="nav-btn" type="button" data-view="crash" title="Crash">
+            <span class="nav-icon crash-icon" aria-hidden="true"></span>
+            <span>Crash</span>
+          </button>
+          <button class="nav-btn" type="button" data-view="coinflip" title="Coinflip">
+            <span class="nav-icon coin-icon" aria-hidden="true"></span>
+            <span>Coinflip</span>
+          </button>
+          <button class="nav-btn active" type="button" data-view="mines" title="Mines">
+            <span class="nav-icon mine-icon" aria-hidden="true"></span>
+            <span>Mines</span>
+          </button>
+          <button class="nav-btn" type="button" data-view="plinko" title="Plinko">
+            <span class="nav-icon plinko-icon" aria-hidden="true"></span>
+            <span>Plinko</span>
+          </button>
+          <button class="nav-btn" type="button" data-view="wheel" title="Wheel">
+            <span class="nav-icon wheel-icon" aria-hidden="true"></span>
+            <span>Wheel</span>
+          </button>
+          <button class="nav-btn" type="button" data-view="roulette" title="Roulette">
+            <span class="nav-icon roulette-icon" aria-hidden="true"></span>
+            <span>Roulette</span>
+          </button>
+          <button class="nav-btn" type="button" data-view="blackjack" title="Blackjack">
+            <span class="nav-icon blackjack-icon" aria-hidden="true"></span>
+            <span>Blackjack</span>
+          </button>
+          <button class="nav-btn" type="button" data-view="poker" title="Poker">
+            <span class="nav-icon poker-icon" aria-hidden="true"></span>
+            <span>Poker</span>
+          </button>
+          <button class="nav-btn" type="button" data-view="dice" title="Dice">
+            <span class="nav-icon dice-icon" aria-hidden="true"></span>
+            <span>Dice</span>
+          </button>
+          <button class="nav-btn" type="button" data-view="dice-duel" title="Dice Duel">
+            <span class="nav-icon duel-icon" aria-hidden="true"></span>
+            <span>Dice Duel</span>
+          </button>
+          <button class="nav-btn" type="button" data-view="tower" title="Tower">
+            <span class="nav-icon tower-icon" aria-hidden="true"></span>
+            <span>Tower</span>
+          </button>
+          <button class="nav-btn" type="button" data-view="battle" title="Mystery Battle">
+            <span class="nav-icon battle-icon" aria-hidden="true"></span>
+            <span>Battle</span>
+          </button>
+        </nav>
+
+        <section class="code-panel">
+          <label for="codeInput">Code</label>
+          <div class="code-row">
+            <input id="codeInput" type="text" autocomplete="off" placeholder="Geheimer Code">
+            <button id="redeemCode" type="button" title="Code einloesen">+</button>
+          </div>
+          <p id="codeHint">Promo-Codes sind versteckt und nur einmal einloesbar.</p>
+        </section>
+
+        <p class="safety-note">Nur Spielgeld. Kein Echtgeld, kein Cashout.</p>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <div>
+            <span class="eyebrow">Moon Casino Dashboard</span>
+            <h2 id="viewTitle">Mines</h2>
+          </div>
+          <div class="stats-strip" aria-label="Statistiken">
+            <div>
+              <span>Profit</span>
+              <strong id="profitStat">0</strong>
+            </div>
+            <div>
+              <span>Spiele</span>
+              <strong id="gamesStat">0</strong>
+            </div>
+            <div>
+              <span>Best Win</span>
+              <strong id="bestWinStat">0</strong>
+            </div>
+          </div>
+        </header>
+
+        <section id="toast" class="toast" role="status" aria-live="polite"></section>
+
+        <section class="view active" id="view-mines" data-title="Mines">
+          <div class="tool-layout mines-layout">
+            <div class="control-panel">
+              <h3>Mines</h3>
+              <div class="field">
+                <label for="minesBet">Einsatz</label>
+                <input id="minesBet" type="number" min="1" step="1" value="50">
+              </div>
+              <div class="field">
+                <label for="minesCount">Minen</label>
+                <input id="minesCount" type="range" min="2" max="12" value="5">
+                <div class="range-meta">
+                  <span>2</span>
+                  <strong id="minesCountLabel">5</strong>
+                  <span>12</span>
+                </div>
+              </div>
+              <div class="metric-grid">
+                <div>
+                  <span>Multi</span>
+                  <strong id="minesMultiplier">1.00x</strong>
+                </div>
+                <div>
+                  <span>Cashout</span>
+                  <strong id="minesPayout">0</strong>
+                </div>
+              </div>
+              <div class="action-row">
+                <button id="startMines" class="primary-btn" type="button">Start</button>
+                <button id="cashoutMines" class="secondary-btn" type="button" disabled>Cashout</button>
+              </div>
+            </div>
+            <div class="game-stage">
+              <div id="minesBoard" class="mines-board" aria-label="Mines Spielfeld"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-tower" data-title="Tower">
+          <div class="tool-layout tower-layout">
+            <div class="control-panel">
+              <h3>Tower</h3>
+              <div class="field">
+                <label for="towerBet">Einsatz</label>
+                <input id="towerBet" type="number" min="1" step="1" value="75">
+              </div>
+              <div class="field">
+                <label for="towerRisk">Risk</label>
+                <select id="towerRisk">
+                  <option value="easy">Easy</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="hard">Hard</option>
+                </select>
+              </div>
+              <div class="metric-grid">
+                <div>
+                  <span>Level</span>
+                  <strong id="towerLevel">0/6</strong>
+                </div>
+                <div>
+                  <span>Cashout</span>
+                  <strong id="towerPayout">0</strong>
+                </div>
+              </div>
+              <div class="action-row">
+                <button id="startTower" class="primary-btn" type="button">Start</button>
+                <button id="cashoutTower" class="secondary-btn" type="button" disabled>Cashout</button>
+              </div>
+            </div>
+            <div class="game-stage tower-stage">
+              <div id="towerBoard" class="tower-board" aria-label="Tower Spielfeld"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-cases" data-title="Cases">
+          <div class="cases-layout">
+            <div class="case-stage">
+              <div class="case-list" id="caseList"></div>
+              <div class="case-window">
+                <div id="caseReel" class="case-reel"></div>
+                <div class="case-pointer" aria-hidden="true"></div>
+              </div>
+              <div class="case-actions">
+                <div>
+                  <span class="eyebrow">Aktuelle Case</span>
+                  <h3 id="selectedCaseName">Rusty Box</h3>
+                  <p id="selectedCasePrice">Preis: 25 Coins</p>
+                </div>
+                <button id="openCase" class="primary-btn" type="button">Oeffnen</button>
+              </div>
+              <div id="caseOdds" class="case-odds" aria-label="Case Wahrscheinlichkeiten"></div>
+              <div id="caseDrops" class="drop-log" aria-label="Letzte Case Drops"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-coinflip" data-title="Coinflip">
+          <div class="tool-layout coinflip-layout">
+            <div class="control-panel">
+              <h3>Coinflip</h3>
+              <div class="field">
+                <label for="coinflipBet">Einsatz</label>
+                <input id="coinflipBet" type="number" min="1" step="1" value="50">
+              </div>
+              <div class="field">
+                <label>Seite</label>
+                <div class="segmented" role="group" aria-label="Coinflip Seite waehlen">
+                  <button class="segment active" type="button" data-coin-pick="heads">Kopf</button>
+                  <button class="segment" type="button" data-coin-pick="tails">Zahl</button>
+                </div>
+              </div>
+              <div class="metric-grid">
+                <div>
+                  <span>Chance</span>
+                  <strong>50%</strong>
+                </div>
+                <div>
+                  <span>Multi</span>
+                  <strong>1.95x</strong>
+                </div>
+              </div>
+              <button id="flipCoin" class="primary-btn wide" type="button">Flip</button>
+            </div>
+            <div class="game-stage coinflip-stage">
+              <div id="coinVisual" class="coin-visual">K</div>
+              <div id="coinflipResult" class="floating-result">Bereit</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-crash" data-title="Crash">
+          <div class="tool-layout crash-layout">
+            <div class="control-panel">
+              <h3>Crash</h3>
+              <div class="field">
+                <label for="crashBet">Einsatz</label>
+                <input id="crashBet" type="number" min="1" step="1" value="50">
+              </div>
+              <div class="metric-grid">
+                <div>
+                  <span>Multi</span>
+                  <strong id="crashMultiplier">1.00x</strong>
+                </div>
+                <div>
+                  <span>Payout</span>
+                  <strong id="crashPayout">0</strong>
+                </div>
+              </div>
+              <div class="action-row">
+                <button id="startCrash" class="primary-btn" type="button">Start</button>
+                <button id="cashoutCrash" class="secondary-btn" type="button" disabled>Cashout</button>
+              </div>
+            </div>
+            <div class="game-stage crash-stage">
+              <canvas id="crashCanvas" width="900" height="500" aria-label="Crash Graph"></canvas>
+              <div id="crashStatus" class="crash-status">Bereit</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-plinko" data-title="Plinko">
+          <div class="tool-layout plinko-layout">
+            <div class="control-panel">
+              <h3>Plinko</h3>
+              <div class="field">
+                <label for="plinkoBet">Einsatz</label>
+                <input id="plinkoBet" type="number" min="1" step="1" value="50">
+              </div>
+              <div class="field">
+                <label for="plinkoRisk">Risk</label>
+                <select id="plinkoRisk">
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+              <div class="metric-grid">
+                <div>
+                  <span>Rows</span>
+                  <strong>12</strong>
+                </div>
+                <div>
+                  <span>Max</span>
+                  <strong id="plinkoMax">8.00x</strong>
+                </div>
+              </div>
+              <div class="action-row">
+                <button id="dropPlinko" class="primary-btn" type="button">Drop</button>
+                <button id="dropPlinkoTen" class="secondary-btn" type="button">10 Balls</button>
+              </div>
+            </div>
+            <div class="game-stage plinko-stage">
+              <div id="plinkoBoard" class="plinko-board" aria-label="Plinko Board">
+                <div id="plinkoBall" class="plinko-ball"></div>
+              </div>
+              <div id="plinkoSlots" class="plinko-slots"></div>
+              <div id="plinkoResult" class="floating-result">Bereit</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-dice" data-title="Dice">
+          <div class="tool-layout dice-layout">
+            <div class="control-panel">
+              <h3>Dice</h3>
+              <div class="field">
+                <label for="diceBet">Einsatz</label>
+                <input id="diceBet" type="number" min="1" step="1" value="40">
+              </div>
+              <div class="field">
+                <label for="diceTarget">Roll unter</label>
+                <input id="diceTarget" type="range" min="10" max="90" value="55">
+                <div class="range-meta">
+                  <span>10</span>
+                  <strong id="diceTargetLabel">55</strong>
+                  <span>90</span>
+                </div>
+              </div>
+              <div class="metric-grid">
+                <div>
+                  <span>Chance</span>
+                  <strong id="diceChance">55%</strong>
+                </div>
+                <div>
+                  <span>Multi</span>
+                  <strong id="diceMultiplier">1.78x</strong>
+                </div>
+              </div>
+              <button id="rollDice" class="primary-btn wide" type="button">Roll</button>
+            </div>
+            <div class="game-stage dice-stage">
+              <div class="dice-meter">
+                <div id="diceWinZone" class="dice-win-zone"></div>
+                <div id="diceMarker" class="dice-marker"></div>
+              </div>
+              <div id="diceNumber" class="dice-number">--</div>
+              <div id="diceResult" class="dice-result">Bereit</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-dice-duel" data-title="Dice Duel">
+          <div class="tool-layout duel-layout">
+            <div class="control-panel">
+              <h3>Dice Duel</h3>
+              <div class="field">
+                <label for="duelBet">Einsatz</label>
+                <input id="duelBet" type="number" min="1" step="1" value="60">
+              </div>
+              <div class="metric-grid">
+                <div>
+                  <span>Du</span>
+                  <strong id="duelPlayerScore">--</strong>
+                </div>
+                <div>
+                  <span>Bot</span>
+                  <strong id="duelBotScore">--</strong>
+                </div>
+              </div>
+              <button id="rollDuel" class="primary-btn wide" type="button">Duel starten</button>
+            </div>
+            <div class="game-stage duel-stage">
+              <div class="duel-dice-wrap">
+                <div id="playerDie" class="duel-die">?</div>
+                <div id="botDie" class="duel-die">?</div>
+              </div>
+              <div id="duelResult" class="floating-result">Bereit</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-wheel" data-title="Wheel">
+          <div class="tool-layout wheel-layout">
+            <div class="control-panel">
+              <h3>Wheel</h3>
+              <div class="field">
+                <label for="wheelBet">Einsatz</label>
+                <input id="wheelBet" type="number" min="1" step="1" value="60">
+              </div>
+              <div class="field">
+                <label>Farbe</label>
+                <div class="segmented" role="group" aria-label="Farbe waehlen">
+                  <button class="segment active" type="button" data-wheel-pick="blue">Blau</button>
+                  <button class="segment" type="button" data-wheel-pick="green">Gruen</button>
+                  <button class="segment" type="button" data-wheel-pick="gold">Gold</button>
+                </div>
+              </div>
+              <div class="metric-grid">
+                <div>
+                  <span>Treffer</span>
+                  <strong id="wheelChance">46%</strong>
+                </div>
+                <div>
+                  <span>Multi</span>
+                  <strong id="wheelMultiplier">2.00x</strong>
+                </div>
+              </div>
+              <button id="spinWheel" class="primary-btn wide" type="button">Spin</button>
+            </div>
+            <div class="game-stage wheel-stage">
+              <div class="wheel-pointer" aria-hidden="true"></div>
+              <div id="wheelDisc" class="wheel-disc" aria-label="Wheel Rad"></div>
+              <div id="wheelResult" class="wheel-result">Bereit</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-roulette" data-title="Roulette">
+          <div class="tool-layout roulette-layout">
+            <div class="control-panel">
+              <h3>Roulette</h3>
+              <div class="field">
+                <label for="rouletteBet">Einsatz</label>
+                <input id="rouletteBet" type="number" min="1" step="1" value="50">
+              </div>
+              <div class="field">
+                <label>Pick</label>
+                <div class="segmented roulette-picks" role="group" aria-label="Roulette Pick">
+                  <button class="segment active" type="button" data-roulette-pick="red">Rot</button>
+                  <button class="segment" type="button" data-roulette-pick="black">Schwarz</button>
+                  <button class="segment" type="button" data-roulette-pick="green">Zero</button>
+                  <button class="segment" type="button" data-roulette-pick="even">Gerade</button>
+                  <button class="segment" type="button" data-roulette-pick="odd">Ungerade</button>
+                  <button class="segment" type="button" data-roulette-pick="low">1-7</button>
+                  <button class="segment" type="button" data-roulette-pick="high">8-14</button>
+                </div>
+              </div>
+              <div class="metric-grid">
+                <div>
+                  <span>Pick</span>
+                  <strong id="roulettePickLabel">Rot</strong>
+                </div>
+                <div>
+                  <span>Payout</span>
+                  <strong id="roulettePayoutLabel">2.00x</strong>
+                </div>
+                <div>
+                  <span>Zahl</span>
+                  <strong id="rouletteLastNumber">--</strong>
+                </div>
+                <div>
+                  <span>Farbe</span>
+                  <strong id="rouletteLastColor">--</strong>
+                </div>
+              </div>
+              <button id="spinRoulette" class="primary-btn wide" type="button">Spin</button>
+            </div>
+            <div class="game-stage roulette-stage">
+              <div class="roulette-wheel-wrap">
+                <div id="rouletteDisc" class="roulette-disc"></div>
+                <div id="rouletteBall" class="roulette-ball"></div>
+                <div class="roulette-pointer" aria-hidden="true"></div>
+              </div>
+              <div id="rouletteResult" class="floating-result">Bereit</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-blackjack" data-title="Blackjack">
+          <div class="tool-layout blackjack-layout">
+            <div class="control-panel">
+              <h3>Blackjack</h3>
+              <div class="field">
+                <label for="blackjackBet">Einsatz</label>
+                <input id="blackjackBet" type="number" min="1" step="1" value="75">
+              </div>
+              <div class="metric-grid">
+                <div>
+                  <span>Du</span>
+                  <strong id="blackjackPlayerScore">--</strong>
+                </div>
+                <div>
+                  <span>Dealer</span>
+                  <strong id="blackjackDealerScore">--</strong>
+                </div>
+              </div>
+              <div class="action-row">
+                <button id="dealBlackjack" class="primary-btn" type="button">Deal</button>
+                <button id="hitBlackjack" class="secondary-btn" type="button" disabled>Hit</button>
+                <button id="standBlackjack" class="secondary-btn" type="button" disabled>Stand</button>
+              </div>
+            </div>
+            <div class="game-stage card-stage">
+              <div>
+                <div class="card-row" id="blackjackDealerCards"></div>
+                <div class="card-row" id="blackjackPlayerCards"></div>
+              </div>
+              <div id="blackjackResult" class="floating-result">Bereit</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-poker" data-title="Poker">
+          <div class="tool-layout poker-layout">
+            <div class="control-panel">
+              <h3>Poker</h3>
+              <div class="field">
+                <label for="pokerExchangeAmount">Coins umtauschen</label>
+                <input id="pokerExchangeAmount" type="number" min="10" step="10" value="1000">
+              </div>
+              <div class="action-row">
+                <button id="buyPokerChips" class="secondary-btn" type="button">Umtauschen</button>
+                <button id="cashoutPokerChips" class="secondary-btn" type="button">Zurueck</button>
+              </div>
+              <div class="field">
+                <label for="pokerCashoutAmount">Chips zurueck</label>
+                <input id="pokerCashoutAmount" type="number" min="1" step="1" value="10">
+              </div>
+              <div class="field">
+                <label for="pokerBet">Raise</label>
+                <input id="pokerBet" type="number" min="2" step="1" value="4">
+              </div>
+              <div class="metric-grid">
+                <div>
+                  <span>Chips</span>
+                  <strong id="pokerChipBalance">0</strong>
+                </div>
+                <div>
+                  <span>Bot</span>
+                  <strong id="pokerBotChips">1.000</strong>
+                </div>
+                <div>
+                  <span>Pot</span>
+                  <strong id="pokerPot">0</strong>
+                </div>
+                <div>
+                  <span>Call</span>
+                  <strong id="pokerCurrentBet">0</strong>
+                </div>
+                <div>
+                  <span>Du gesetzt</span>
+                  <strong id="pokerPlayerStreetBet">0</strong>
+                </div>
+                <div>
+                  <span>Bot gesetzt</span>
+                  <strong id="pokerBotStreetBet">0</strong>
+                </div>
+                <div>
+                  <span>Street</span>
+                  <strong id="pokerStreet">--</strong>
+                </div>
+                <div>
+                  <span>Blind</span>
+                  <strong id="pokerBlindLabel">--</strong>
+                </div>
+                <div>
+                  <span>Du</span>
+                  <strong id="pokerPlayerRank">--</strong>
+                </div>
+                <div>
+                  <span>Bot</span>
+                  <strong id="pokerBotRank">--</strong>
+                </div>
+              </div>
+              <div class="action-row">
+                <button id="dealPoker" class="primary-btn" type="button">Hand</button>
+                <button id="pokerCall" class="secondary-btn" type="button" disabled>Check</button>
+              </div>
+              <div class="action-row">
+                <button id="pokerRaise" class="secondary-btn" type="button" disabled>Raise</button>
+                <button id="pokerAllIn" class="secondary-btn" type="button" disabled>All-In</button>
+                <button id="foldPoker" class="secondary-btn" type="button" disabled>Fold</button>
+              </div>
+            </div>
+            <div class="game-stage card-stage poker-stage">
+              <div class="poker-table">
+                <div class="card-row" id="pokerBotCards"></div>
+                <div class="poker-bet-visual">
+                  <div id="pokerBotBetStack" class="chip-stack mini-stack"><span>0</span></div>
+                </div>
+                <div class="card-row community-row" id="pokerCommunityCards"></div>
+                <div class="poker-bet-visual">
+                  <div id="pokerPlayerBetStack" class="chip-stack"><span>0</span></div>
+                </div>
+                <div class="card-row" id="pokerPlayerCards"></div>
+              </div>
+              <div id="pokerResult" class="floating-result">Bereit</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-battle" data-title="Mystery Battle">
+          <div class="tool-layout battle-layout">
+            <div class="control-panel">
+              <h3>Mystery Battle</h3>
+              <div class="field">
+                <label for="battleCase">Case</label>
+                <select id="battleCase"></select>
+              </div>
+              <div class="field">
+                <label for="battleBots">Bots</label>
+                <select id="battleBots">
+                  <option value="1">1 Bot</option>
+                  <option value="2" selected>2 Bots</option>
+                  <option value="3">3 Bots</option>
+                </select>
+              </div>
+              <div class="metric-grid">
+                <div>
+                  <span>Kosten</span>
+                  <strong id="battleCost">0</strong>
+                </div>
+                <div>
+                  <span>Winner</span>
+                  <strong id="battleWinner">--</strong>
+                </div>
+              </div>
+              <button id="startBattle" class="primary-btn wide" type="button">Battle</button>
+            </div>
+            <div class="game-stage battle-stage">
+              <div id="battleArena" class="battle-arena"></div>
+              <div id="battleResult" class="floating-result">Bereit</div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <section id="tradeApp" class="trade-app app-mode" hidden>
+      <header class="trade-header">
+        <div class="brand trade-brand">
+          <div class="brand-mark" aria-hidden="true"><span class="moon-logo"></span></div>
+          <div>
+            <span class="eyebrow">Moon Casino Trading</span>
+            <h1>Crypto Demo Market</h1>
+          </div>
+        </div>
+        <div class="trade-nav">
+          <button id="openLobbyFromTrade" class="ghost-btn" type="button">Lobby</button>
+          <button id="openCasinoFromTrade" class="primary-btn" type="button">Casino</button>
+        </div>
+      </header>
+
+      <section id="tradeToast" class="toast" role="status" aria-live="polite"></section>
+
+      <div class="trade-dashboard">
+        <section class="trade-summary">
+          <div>
+            <span>Demo-Coins</span>
+            <strong id="tradeBalance">0</strong>
+          </div>
+          <div>
+            <span>Portfolio</span>
+            <strong id="tradePortfolioValue">0</strong>
+          </div>
+          <div>
+            <span>Net Worth</span>
+            <strong id="tradeNetWorth">0</strong>
+          </div>
+          <div>
+            <span>Coins</span>
+            <strong id="tradeAssetCount">0</strong>
+          </div>
+        </section>
+
+        <section class="trade-layout">
+          <div class="trade-panel crypto-market">
+            <div class="trade-panel-head">
+              <div>
+                <span class="eyebrow">Market</span>
+                <h2>Fake Crypto</h2>
+              </div>
+              <button id="refreshCrypto" class="ghost-btn" type="button">Refresh</button>
+            </div>
+            <div class="crypto-chart-card">
+              <div class="crypto-chart-head">
+                <div>
+                  <span id="cryptoChartLabel" class="eyebrow">BTC Graph</span>
+                  <strong id="cryptoChartPrice">0</strong>
+                </div>
+                <span id="cryptoStopLossBadge" class="stop-loss-badge">Kein Stop Loss</span>
+              </div>
+              <canvas id="cryptoChart" width="900" height="320" aria-label="Crypto Preis Graph"></canvas>
+            </div>
+            <div id="cryptoList" class="crypto-list" aria-label="Crypto Auswahl"></div>
+          </div>
+
+          <aside class="trade-panel crypto-ticket">
+            <div id="selectedCryptoLogo" class="crypto-logo large-logo">BTC</div>
+            <span class="eyebrow" id="selectedCryptoSymbol">BTC</span>
+            <h2 id="selectedCryptoName">Bitcoin</h2>
+            <div class="trade-metric-grid">
+              <div>
+                <span>Preis</span>
+                <strong id="selectedCryptoPrice">0</strong>
+              </div>
+              <div>
+                <span>24h</span>
+                <strong id="selectedCryptoChange">0%</strong>
+              </div>
+              <div>
+                <span>Dein Bestand</span>
+                <strong id="selectedCryptoHolding">0</strong>
+              </div>
+              <div>
+                <span>Wert</span>
+                <strong id="selectedCryptoValue">0</strong>
+              </div>
+            </div>
+            <div class="field">
+              <label for="cryptoTradeAmount">Demo-Coins</label>
+              <input id="cryptoTradeAmount" type="number" min="1" step="1" value="100">
+            </div>
+            <div class="action-row">
+              <button id="buyCrypto" class="primary-btn" type="button">Kaufen</button>
+              <button id="sellCrypto" class="secondary-btn" type="button">Verkaufen</button>
+            </div>
+            <div class="stop-loss-panel">
+              <div class="field">
+                <label for="cryptoStopLossPrice">Stop Loss Wert</label>
+                <input id="cryptoStopLossPrice" type="text" inputmode="decimal" placeholder="z.B. 59000 oder 59K">
+              </div>
+              <div class="action-row">
+                <button id="setCryptoStopLoss" class="secondary-btn" type="button">Setzen</button>
+                <button id="clearCryptoStopLoss" class="ghost-btn" type="button">Loeschen</button>
+              </div>
+              <p id="cryptoStopLossStatus" class="stop-loss-status">Kein Stop Loss aktiv.</p>
+            </div>
+            <p class="safety-note">Simulierte Kurse. Kein echtes Trading, kein Echtgeld.</p>
+          </aside>
+        </section>
+      </div>
+    </section>
+
+    <section id="moonMenu" class="moon-menu" hidden aria-label="Moon Predictor">
+      <div id="moonDragHandle" class="moon-head">
+        <div>
+          <span class="eyebrow">Signal Engine</span>
+          <h2>Moon Predictor</h2>
+        </div>
+        <div class="moon-head-actions">
+          <button id="moonCompactToggle" class="ghost-btn" type="button">Klein</button>
+          <button id="closeMoon" class="ghost-btn" type="button">Schliessen</button>
+        </div>
+      </div>
+      <div class="moon-signal">
+        <span id="moonPulse" aria-hidden="true"></span>
+        <strong>Link established</strong>
+        <small id="moonLicenseState">Autoplay mode</small>
+      </div>
+      <div class="moon-license">
+        <label for="moonLicenseInput">Moon Lizenz</label>
+        <div class="code-row">
+          <input id="moonLicenseInput" type="password" autocomplete="off" placeholder="Lizenz-Code">
+          <button id="moonUnlock" type="button" title="Moon Lizenz aktivieren">OK</button>
+        </div>
+      </div>
+      <div class="moon-grid">
+        <button id="moonPredictMines" class="secondary-btn" type="button">Mines Signal</button>
+        <button id="moonPredictTower" class="secondary-btn" type="button">Tower Signal</button>
+        <button id="moonCrashHint" class="secondary-btn" type="button">Crash Signal</button>
+      </div>
+      <div class="field">
+        <label for="moonCrashTarget">Auto Cashout Crash</label>
+        <input id="moonCrashTarget" type="number" min="1.1" step="0.1" value="2.0">
+      </div>
+      <button id="moonAutoCashout" class="primary-btn wide" type="button">Crash Auto Cashout aktivieren</button>
+      <div class="moon-divider"></div>
+      <div class="moon-trade-config">
+        <div class="field">
+          <label for="moonTradeCoin">Trade Coin</label>
+          <select id="moonTradeCoin"></select>
+        </div>
+        <div class="field">
+          <label for="moonTradeBudget">Budget</label>
+          <input id="moonTradeBudget" type="number" min="1" step="1" value="100">
+        </div>
+        <div class="field">
+          <label for="moonTradeProfit">Sell +%</label>
+          <input id="moonTradeProfit" type="number" min="0.1" step="0.1" value="1.5">
+        </div>
+        <div class="field">
+          <label for="moonTradeStop">Stop Loss %</label>
+          <input id="moonTradeStop" type="number" min="0.1" step="0.1" value="2.0">
+        </div>
+        <button id="moonStartTrade" class="primary-btn wide" type="button">Trade Mode starten</button>
+        <button id="moonStopTrade" class="ghost-btn wide" type="button">Trade Mode stoppen</button>
+        <small id="moonTradeStatus">Kauft Dips, setzt Stop Loss und verkauft bei kleinem Profit.</small>
+      </div>
+      <div class="moon-divider"></div>
+      <div class="moon-auto-config">
+        <div class="field">
+          <label for="moonAutoGame">Auto-Spiel</label>
+          <select id="moonAutoGame"></select>
+        </div>
+        <div class="field">
+          <label for="moonAutoRuns">Durchlaeufe</label>
+          <input id="moonAutoRuns" type="number" min="0" step="1" value="0">
+        </div>
+        <div class="field">
+          <label for="moonAutoDuration">Zeitlimit Sek.</label>
+          <input id="moonAutoDuration" type="number" min="0" step="1" value="0">
+        </div>
+        <div class="field">
+          <label for="moonAutoMaxBet">Max Bet</label>
+          <input id="moonAutoMaxBet" type="number" min="0" step="1" value="0">
+        </div>
+        <button id="moonStartAutoSelected" class="primary-btn wide" type="button">Auto starten</button>
+        <small>0 bedeutet kein Limit. Ohne Lizenz bleibt Auto normaler Zufall.</small>
+      </div>
+      <div id="moonAutoGrid" class="moon-grid moon-auto-grid" aria-label="Autoplay Steuerung"></div>
+      <button id="moonStopAuto" class="ghost-btn wide" type="button">Alle Autos stoppen</button>
+      <p id="moonStatus">In der Konsole mit openMoonPredictor() oeffnen.</p>
+    </section>
+
+    <section id="adminPanel" class="admin-panel" hidden aria-label="Admin Panel">
+      <div class="admin-card">
+        <div class="moon-head">
+          <div>
+            <span class="eyebrow">Admin</span>
+            <h2>License Codes</h2>
+          </div>
+          <button id="closeAdmin" class="ghost-btn" type="button">Schliessen</button>
+        </div>
+        <div id="adminLoginArea">
+          <div class="field">
+            <label for="adminPassword">Passwort</label>
+            <input id="adminPassword" type="password" autocomplete="off" placeholder="Passwort">
+          </div>
+          <button id="adminLogin" class="primary-btn wide" type="button">Einloggen</button>
+        </div>
+        <div id="adminTools" hidden>
+          <button id="adminGenerateLicense" class="primary-btn wide" type="button">Lizenz generieren</button>
+          <div class="field">
+            <label for="adminGeneratedCode">Neuer Code</label>
+            <input id="adminGeneratedCode" type="text" readonly>
+          </div>
+          <div id="adminLicenseList" class="license-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <script src="app.js"></script>
+  </body>
+</html>
